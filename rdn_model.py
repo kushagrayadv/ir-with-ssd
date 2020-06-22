@@ -125,50 +125,50 @@ class RDN(object):
         
         return IHQ
 
-#     def build_model(self,images_shape, labels_shape):
-#         self.images = tf.placeholder(tf.float32, images_shape, name = 'images')
-#         self.labels = tf.placeholder(tf.float32, labels_shape, name = 'labels')
+    def build_model(self,images_shape, labels_shape):
+        self.images = tf.placeholder(tf.float32, images_shape, name = 'images')
+        self.labels = tf.placeholder(tf.float32, labels_shape, name = 'labels')
 
-#         self.weightsS, self.biasesS = self.SFEParams()
-#         self.weightsR, self.biasesR = self.RDBParams()
-#         self.weightsD, self.biasesD = self.DFFParams()
-#         self.weight_final = tf.Variable(tf.random_normal([self.kernel_size, self.kernel_size, self.G0, self.c_dim], stddev= np.sqrt(2.0/9/3)), name='w_f')
-#         self.bias_final = tf.Variable(tf.zeros([self.c_dim], name='b_f'))
+        self.weightsS, self.biasesS = self.SFEParams()
+        self.weightsR, self.biasesR = self.RDBParams()
+        self.weightsD, self.biasesD = self.DFFParams()
+        self.weight_final = tf.Variable(tf.random_normal([self.kernel_size, self.kernel_size, self.G0, self.c_dim], stddev= np.sqrt(2.0/9/3)), name='w_f')
+        self.bias_final = tf.Variable(tf.zeros([self.c_dim], name='b_f'))
 
-#         self.preds = self.model()
-#         self.loss = tf.reduce_mean(tf.abs(self.labels - self.preds))
-#         self.summary = tf.summary.scalar('loss', self.loss)
-#         self.model_name = '%s_%s_%s_%s_sig_%s' % ('rdn', self.D, self.C, self.G, self.noise_level)
-#         self.saver = tf.train.Saver(max_to_keep = 10)
-
-
-#     def load(self, checkpoint_dir, restore=True):
-#         ckpt_dir = os.path.join(checkpoint_dir, self.model_name)
-#         ckpt = tf.train.get_checkpoint_state(ckpt_dir)
-
-#         if ckpt and ckpt.model_checkpoint_path:
-#             ckpt_path = str(ckpt.model_checkpoint_path)
-#             step = int(os.path.basename(ckpt_path).split('-')[1])
-#             if restore:
-#                 self.saver.restore(self.sess, os.path.join(os.getcwd(), ckpt_path))
-#                 print("\nCheckpoint Loading Success! %s\n" % ckpt_path)
-#         else:
-#             step = 0
-#             if restore:
-#                 print("\nEither checkpoint not available or Checkpoint Loading Failed! \n")
-
-#         return step
+        self.preds = self.model()
+        self.loss = tf.reduce_mean(tf.abs(self.labels - self.preds))
+        self.summary = tf.summary.scalar('loss', self.loss)
+        self.model_name = '%s_%s_%s_%s_sig_%s' % ('rdn', self.D, self.C, self.G, self.noise_level)
+        self.saver = tf.train.Saver(max_to_keep = 10)
 
 
-#     def save(self, checkpoint_dir, step):
-#         checkpoint_dir = os.path.join(checkpoint_dir, self.model_name)
+    def load(self, checkpoint_dir, restore=True):
+        ckpt_dir = os.path.join(checkpoint_dir, self.model_name)
+        ckpt = tf.train.get_checkpoint_state(ckpt_dir)
 
-#         if not os.path.exists(checkpoint_dir):
-#              os.makedirs(checkpoint_dir)
+        if ckpt and ckpt.model_checkpoint_path:
+            ckpt_path = str(ckpt.model_checkpoint_path)
+            step = int(os.path.basename(ckpt_path).split('-')[1])
+            if restore:
+                self.saver.restore(self.sess, os.path.join(os.getcwd(), ckpt_path))
+                print("\nCheckpoint Loading Success! %s\n" % ckpt_path)
+        else:
+            step = 0
+            if restore:
+                print("\nEither checkpoint not available or Checkpoint Loading Failed! \n")
 
-#         self.saver.save(self.sess,
-#                         os.path.join(checkpoint_dir, "RDN.model"),
-#                         global_step=step)
+        return step
+
+
+    def save(self, checkpoint_dir, step):
+        checkpoint_dir = os.path.join(checkpoint_dir, self.model_name)
+
+        if not os.path.exists(checkpoint_dir):
+             os.makedirs(checkpoint_dir)
+
+        self.saver.save(self.sess,
+                        os.path.join(checkpoint_dir, "RDN.model"),
+                        global_step=step)
 
     
 #     def train(self,config):
