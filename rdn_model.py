@@ -125,197 +125,197 @@ class RDN(object):
         
         return IHQ
 
-    def build_model(self,images_shape, labels_shape):
-        self.images = tf.placeholder(tf.float32, images_shape, name = 'images')
-        self.labels = tf.placeholder(tf.float32, labels_shape, name = 'labels')
+#     def build_model(self,images_shape, labels_shape):
+#         self.images = tf.placeholder(tf.float32, images_shape, name = 'images')
+#         self.labels = tf.placeholder(tf.float32, labels_shape, name = 'labels')
 
-        self.weightsS, self.biasesS = self.SFEParams()
-        self.weightsR, self.biasesR = self.RDBParams()
-        self.weightsD, self.biasesD = self.DFFParams()
-        self.weight_final = tf.Variable(tf.random_normal([self.kernel_size, self.kernel_size, self.G0, self.c_dim], stddev= np.sqrt(2.0/9/3)), name='w_f')
-        self.bias_final = tf.Variable(tf.zeros([self.c_dim], name='b_f'))
+#         self.weightsS, self.biasesS = self.SFEParams()
+#         self.weightsR, self.biasesR = self.RDBParams()
+#         self.weightsD, self.biasesD = self.DFFParams()
+#         self.weight_final = tf.Variable(tf.random_normal([self.kernel_size, self.kernel_size, self.G0, self.c_dim], stddev= np.sqrt(2.0/9/3)), name='w_f')
+#         self.bias_final = tf.Variable(tf.zeros([self.c_dim], name='b_f'))
 
-        self.preds = self.model()
-        self.loss = tf.reduce_mean(tf.abs(self.labels - self.preds))
-        self.summary = tf.summary.scalar('loss', self.loss)
-        self.model_name = '%s_%s_%s_%s_sig_%s' % ('rdn', self.D, self.C, self.G, self.noise_level)
-        self.saver = tf.train.Saver(max_to_keep = 10)
-
-
-    def load(self, checkpoint_dir, restore=True):
-        ckpt_dir = os.path.join(checkpoint_dir, self.model_name)
-        ckpt = tf.train.get_checkpoint_state(ckpt_dir)
-
-        if ckpt and ckpt.model_checkpoint_path:
-            ckpt_path = str(ckpt.model_checkpoint_path)
-            step = int(os.path.basename(ckpt_path).split('-')[1])
-            if restore:
-                self.saver.restore(self.sess, os.path.join(os.getcwd(), ckpt_path))
-                print("\nCheckpoint Loading Success! %s\n" % ckpt_path)
-        else:
-            step = 0
-            if restore:
-                print("\nEither checkpoint not available or Checkpoint Loading Failed! \n")
-
-        return step
+#         self.preds = self.model()
+#         self.loss = tf.reduce_mean(tf.abs(self.labels - self.preds))
+#         self.summary = tf.summary.scalar('loss', self.loss)
+#         self.model_name = '%s_%s_%s_%s_sig_%s' % ('rdn', self.D, self.C, self.G, self.noise_level)
+#         self.saver = tf.train.Saver(max_to_keep = 10)
 
 
-    def save(self, checkpoint_dir, step):
-        checkpoint_dir = os.path.join(checkpoint_dir, self.model_name)
+#     def load(self, checkpoint_dir, restore=True):
+#         ckpt_dir = os.path.join(checkpoint_dir, self.model_name)
+#         ckpt = tf.train.get_checkpoint_state(ckpt_dir)
 
-        if not os.path.exists(checkpoint_dir):
-             os.makedirs(checkpoint_dir)
+#         if ckpt and ckpt.model_checkpoint_path:
+#             ckpt_path = str(ckpt.model_checkpoint_path)
+#             step = int(os.path.basename(ckpt_path).split('-')[1])
+#             if restore:
+#                 self.saver.restore(self.sess, os.path.join(os.getcwd(), ckpt_path))
+#                 print("\nCheckpoint Loading Success! %s\n" % ckpt_path)
+#         else:
+#             step = 0
+#             if restore:
+#                 print("\nEither checkpoint not available or Checkpoint Loading Failed! \n")
 
-        self.saver.save(self.sess,
-                        os.path.join(checkpoint_dir, "RDN.model"),
-                        global_step=step)
+#         return step
+
+
+#     def save(self, checkpoint_dir, step):
+#         checkpoint_dir = os.path.join(checkpoint_dir, self.model_name)
+
+#         if not os.path.exists(checkpoint_dir):
+#              os.makedirs(checkpoint_dir)
+
+#         self.saver.save(self.sess,
+#                         os.path.join(checkpoint_dir, "RDN.model"),
+#                         global_step=step)
 
     
-    def train(self,config):
-        print('\nPreparing Data....\n')
-        data = input_setup(config)
-        if len(data)==0:
-            print('\nTraining data not found\n')
-            return
+#     def train(self,config):
+#         print('\nPreparing Data....\n')
+#         data = input_setup(config)
+#         if len(data)==0:
+#             print('\nTraining data not found\n')
+#             return
 
-        data_dir = get_data_dir(config.checkpoint_dir, config.is_train, config.noise_level)
-        print((data_dir))
-        num_data = get_num_data(data_dir)    
-        print(num_data)
-        num_batch = num_data // config.batch_size
-        print(num_batch)
+#         data_dir = get_data_dir(config.checkpoint_dir, config.is_train, config.noise_level)
+#         print((data_dir))
+#         num_data = get_num_data(data_dir)    
+#         print(num_data)
+#         num_batch = num_data // config.batch_size
+#         print(num_batch)
 
-        images_shape = [None, self.image_size, self.image_size, self.c_dim]
-        labels_shape = [None, self.image_size, self.image_size, self.c_dim]
-        self.build_model(images_shape, labels_shape)
+#         images_shape = [None, self.image_size, self.image_size, self.c_dim]
+#         labels_shape = [None, self.image_size, self.image_size, self.c_dim]
+#         self.build_model(images_shape, labels_shape)
 
-        counter = self.load(config.checkpoint_dir, restore=False)
-        epoch_start = int(counter / num_batch)
-        batch_start = counter % num_batch
+#         counter = self.load(config.checkpoint_dir, restore=False)
+#         epoch_start = int(counter / num_batch)
+#         batch_start = counter % num_batch
 
-        global_step = tf.Variable(counter, trainable=False)
-        learning_rate = tf.train.exponential_decay(config.learning_rate, global_step, config.lr_decay_steps * num_batch, config.lr_decay_rate, staircase=True)
-        optimizer = tf.train.AdamOptimizer(learning_rate=0.0001)
-        learning_step = optimizer.minimize(loss= self.loss, global_step = global_step)
+#         global_step = tf.Variable(counter, trainable=False)
+#         learning_rate = tf.train.exponential_decay(config.learning_rate, global_step, config.lr_decay_steps * num_batch, config.lr_decay_rate, staircase=True)
+#         optimizer = tf.train.AdamOptimizer(learning_rate=0.0001)
+#         learning_step = optimizer.minimize(loss= self.loss, global_step = global_step)
 
-        self.sess.run(tf.global_variables_initializer())
-        merged_summary_op = tf.summary.merge_all()
-        summary_writer = tf.summary.FileWriter(os.path.join(config.checkpoint_dir, self.model_name, 'log'), graph=self.sess.graph)
+#         self.sess.run(tf.global_variables_initializer())
+#         merged_summary_op = tf.summary.merge_all()
+#         summary_writer = tf.summary.FileWriter(os.path.join(config.checkpoint_dir, self.model_name, 'log'), graph=self.sess.graph)
 
-        self.load(config.checkpoint_dir, restore = True)
-        print('\nStarting training...\n')
-        logFile = open('train_log_file_sigma_%s.txt' % config.noise_level, 'w')
-        for epoch in range(epoch_start, config.epochs):
-            for idx in range(batch_start, num_batch):
-                batch_images, batch_labels = get_batch(data_dir, num_data, config.batch_size)
-                counter += 1
+#         self.load(config.checkpoint_dir, restore = True)
+#         print('\nStarting training...\n')
+#         logFile = open('train_log_file_sigma_%s.txt' % config.noise_level, 'w')
+#         for epoch in range(epoch_start, config.epochs):
+#             for idx in range(batch_start, num_batch):
+#                 batch_images, batch_labels = get_batch(data_dir, num_data, config.batch_size)
+#                 counter += 1
 
-                _, err, lr = self.sess.run([learning_step, self.loss, learning_rate], feed_dict= {self.images: batch_images, self.labels: batch_labels})
+#                 _, err, lr = self.sess.run([learning_step, self.loss, learning_rate], feed_dict= {self.images: batch_images, self.labels: batch_labels})
 
-                if counter % 10 == 0:
-                    print('Epoch: [%4d] Batch: [%d/%d] loss: [%.8f] lr: [%5f] step: [%d]' % ((epoch+1), (idx+1), num_batch, err, lr, counter))
-                    logFile.write('Epoch: [%4d] Batch: [%d/%d] loss: [%.8f] lr: [%5f] step: [%d]\n' % ((epoch+1), (idx+1), num_batch, err, lr, counter))
-                if counter % 10000 == 0:
-                    self.save(config.checkpoint_dir, counter)
+#                 if counter % 10 == 0:
+#                     print('Epoch: [%4d] Batch: [%d/%d] loss: [%.8f] lr: [%5f] step: [%d]' % ((epoch+1), (idx+1), num_batch, err, lr, counter))
+#                     logFile.write('Epoch: [%4d] Batch: [%d/%d] loss: [%.8f] lr: [%5f] step: [%d]\n' % ((epoch+1), (idx+1), num_batch, err, lr, counter))
+#                 if counter % 10000 == 0:
+#                     self.save(config.checkpoint_dir, counter)
 
-                    summary_str = self.sess.run(merged_summary_op, feed_dict = {self.images: batch_images, self.labels: batch_labels})
-                    summary_writer.add_summary(summary_str, counter)
+#                     summary_str = self.sess.run(merged_summary_op, feed_dict = {self.images: batch_images, self.labels: batch_labels})
+#                     summary_writer.add_summary(summary_str, counter)
 
-                if counter > 0 and counter == config.epochs * num_batch:
-                    self.save(config.checkpoint_dir,counter)
-                    break
+#                 if counter > 0 and counter == config.epochs * num_batch:
+#                     self.save(config.checkpoint_dir,counter)
+#                     break
 
-        logFile.close()
-        summary_writer.close()
+#         logFile.close()
+#         summary_writer.close()
 
-    def eval(self, config):
-        print('\nPreparing Data..\n')
-        paths = prepare_data(config)
-        num_data = len(paths)
+#     def eval(self, config):
+#         print('\nPreparing Data..\n')
+#         paths = prepare_data(config)
+#         num_data = len(paths)
     
-        psnrFile = open('psnr_sigma_%s.txt'%config.noise_level, 'a')
+#         psnrFile = open('psnr_sigma_%s.txt'%config.noise_level, 'a')
 
-        avg_time = 0
-        avg_psnr = 0
-        print('\nNow evaluating the dataset\n')
-        for i in range(num_data):
+#         avg_time = 0
+#         avg_psnr = 0
+#         print('\nNow evaluating the dataset\n')
+#         for i in range(num_data):
 
-            input_, label_ = get_image(paths[i], config)
+#             input_, label_ = get_image(paths[i], config)
 
-            image_shape = input_.shape
-            label_shape = label_.shape
+#             image_shape = input_.shape
+#             label_shape = label_.shape
 
-            self.build_model(image_shape, label_shape)
+#             self.build_model(image_shape, label_shape)
 
-            self.sess.run(tf.global_variables_initializer())
+#             self.sess.run(tf.global_variables_initializer())
 
-            self.load(config.checkpoint_dir, restore=True)
+#             self.load(config.checkpoint_dir, restore=True)
 
-            time_ = time.time()
-            result = self.sess.run([self.preds], feed_dict = {self.images: input_/255.0})
-            avg_time += time.time() - time_
+#             time_ = time.time()
+#             result = self.sess.run([self.preds], feed_dict = {self.images: input_/255.0})
+#             avg_time += time.time() - time_
 
-            self.sess.close()
-            tf.reset_default_graph()
-            self.sess = tf.Session()
+#             self.sess.close()
+#             tf.reset_default_graph()
+#             self.sess = tf.Session()
 
-            img = np.squeeze(result) * 255
-            img = np.clip(img, 0, 255)
-            psnr = PSNR(img, label_)
-            avg_psnr += psnr
+#             img = np.squeeze(result) * 255
+#             img = np.clip(img, 0, 255)
+#             psnr = PSNR(img, label_)
+#             avg_psnr += psnr
 
-            print('image: [%d/%d] time: [%.4f] psnr: [%.4f]' % (i+1, num_data, time.time()-time_, psnr))
-            psnrFile.write('image: [%d/%d] time: [%.4f] psnr: [%.4f]\n' % (i+1, num_data, time.time()-time_, psnr))
+#             print('image: [%d/%d] time: [%.4f] psnr: [%.4f]' % (i+1, num_data, time.time()-time_, psnr))
+#             psnrFile.write('image: [%d/%d] time: [%.4f] psnr: [%.4f]\n' % (i+1, num_data, time.time()-time_, psnr))
 
-            if not os.path.isdir(os.path.join(os.getcwd(), config.result_dir)):
-                os.makedirs(os.path.join(os.getcwd(), config.result_dir))
+#             if not os.path.isdir(os.path.join(os.getcwd(), config.result_dir)):
+#                 os.makedirs(os.path.join(os.getcwd(), config.result_dir))
             
-            filename = os.path.basename(paths[i])
-            imsave(img, path= config.result_dir + '/%d_sigma/JPEGImages/' % config.noise_level + filename)
+#             filename = os.path.basename(paths[i])
+#             imsave(img, path= config.result_dir + '/%d_sigma/JPEGImages/' % config.noise_level + filename)
 
-        print('\nAverage Time: %.4f' % (avg_time / num_data))
-        psnrFile.write('\nAverage Time: %.4f' % (avg_time / num_data))
-        print('\nAverage PSNR: %.4f' % (avg_psnr / num_data))
-        psnrFile.write('\nAverage PSNR: %.4f' % (avg_psnr / num_data))
-        psnrFile.close()
+#         print('\nAverage Time: %.4f' % (avg_time / num_data))
+#         psnrFile.write('\nAverage Time: %.4f' % (avg_time / num_data))
+#         print('\nAverage PSNR: %.4f' % (avg_psnr / num_data))
+#         psnrFile.write('\nAverage PSNR: %.4f' % (avg_psnr / num_data))
+#         psnrFile.close()
  
 
 
-    def test(self, config):
-        print('\nPreparing the data..\n')
-        paths = prepare_data(config)
-        num_data = len(paths)
+#     def test(self, config):
+#         print('\nPreparing the data..\n')
+#         paths = prepare_data(config)
+#         num_data = len(paths)
 
-        avg_time = 0
-        print('\nInitiating the testing\n')
-        for i in range(num_data):
-#            input_ = imread(paths[i])
-#            input_ = input_[:,:,::-1]
-            input_, label_ = get_image(paths[i], config)
-#            input_ = input_[np.newaxis, :]
+#         avg_time = 0
+#         print('\nInitiating the testing\n')
+#         for i in range(num_data):
+# #            input_ = imread(paths[i])
+# #            input_ = input_[:,:,::-1]
+#             input_, label_ = get_image(paths[i], config)
+# #            input_ = input_[np.newaxis, :]
 
-            image_shape = input_.shape
-            label_shape = input_.shape
-            self.build_model(image_shape, label_shape)
-            tf.global_variables_initializer().run(session= self.sess)
+#             image_shape = input_.shape
+#             label_shape = input_.shape
+#             self.build_model(image_shape, label_shape)
+#             tf.global_variables_initializer().run(session= self.sess)
 
-            self.load(config.checkpoint_dir, restore=True)
+#             self.load(config.checkpoint_dir, restore=True)
 
-            time_ = time.time()
-            result = self.sess.run([self.preds], feed_dict = {self.images: input_/255.0})
-            avg_time += time.time() - time_
+#             time_ = time.time()
+#             result = self.sess.run([self.preds], feed_dict = {self.images: input_/255.0})
+#             avg_time += time.time() - time_
 
-            self.sess.close()
-            tf.reset_default_graph()
-            self.sess = tf.Session()
+#             self.sess.close()
+#             tf.reset_default_graph()
+#             self.sess = tf.Session()
 
-            img = np.squeeze(result) * 255
-            img = np.clip(img, 0, 255)
-#            img = img[:,:,::-1]
+#             img = np.squeeze(result) * 255
+#             img = np.clip(img, 0, 255)
+# #            img = img[:,:,::-1]
 
-            filename = os.path.basename(paths[i])
-            if not os.path.isdir(os.path.join(os.getcwd(), config.result_dir)):
-                os.makedirs(os.path.join(os.getcwd(), config.result_dir))
-            imsave(img, path= config.result_dir + '/' +filename)
-            imsave(input_[0, :], path= config.result_dir + '/noisy_%s' % filename)
+#             filename = os.path.basename(paths[i])
+#             if not os.path.isdir(os.path.join(os.getcwd(), config.result_dir)):
+#                 os.makedirs(os.path.join(os.getcwd(), config.result_dir))
+#             imsave(img, path= config.result_dir + '/' +filename)
+#             imsave(input_[0, :], path= config.result_dir + '/noisy_%s' % filename)
         
