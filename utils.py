@@ -103,75 +103,75 @@ def makenoisy(img, noise_level):
 #     return data
 
 
-# def make_data_h5(input_, label_, config, times):
-#     if not os.path.isdir(os.path.join(os.getcwd(), config.checkpoint_dir)):
-#         os.makedirs(os.join.path(os.getcwd(), config.checkpoint_dir))
+def make_data_h5(input_, label_, config, times):
+    if not os.path.isdir(os.path.join(os.getcwd(), config.checkpoint_dir)):
+        os.makedirs(os.join.path(os.getcwd(), config.checkpoint_dir))
     
-#     if config.is_train:
-#         save_path = os.path.join(os.path.join(os.getcwd(), config.checkpoint_dir), 'train_%dsigma.h5' % config.noise_level)
-#     else:
-#         save_path = os.path.join(os.path.join(os.getcwd(), config.checkpoint_dir), 'eval_%dsigma.h5' % config.noise_level)
+    if config.is_train:
+        save_path = os.path.join(os.path.join(os.getcwd(), config.checkpoint_dir), 'train_%dsigma.h5' % config.noise_level)
+    else:
+        save_path = os.path.join(os.path.join(os.getcwd(), config.checkpoint_dir), 'eval_%dsigma.h5' % config.noise_level)
     
-#     if times == 0:
-#         if os.path.exists(save_path):
-#             print('\n%shave existed!!\n' % save_path)
-#             return False
-#         else:
-#             hf = h5py.File(save_path, mode='w')
+    if times == 0:
+        if os.path.exists(save_path):
+            print('\n%shave existed!!\n' % save_path)
+            return False
+        else:
+            hf = h5py.File(save_path, mode='w')
 
-#             if config.is_train:
-#                 input_h5 = hf.create_dataset('input', (1, config.image_size, config.image_size, config.c_dim), 
-#                                             maxshape= (None, config.image_size, config.image_size, config.c_dim),
-#                                             chunks= (1, config.image_size, config.image_size, config.c_dim), dtype= 'float32')
-#                 label_h5 = hf.create_dataset('label', (1, config.image_size, config.image_size, config.c_dim), 
-#                                             maxshape= (None, config.image_size, config.image_size, config.c_dim),
-#                                             chunks= (1, config.image_size, config.image_size, config.c_dim), dtype= 'float32')
-#             else:
-#                 input_h5 = hf.create_dataset('input', (1, input_.shape[0], input_.shape[1], input_.shape[2]), 
-#                                             maxshape= (None, input_.shape[0], input_.shape[1], input_.shape[2]),
-#                                             chunks= (1, input_.shape[0], input_.shape[1], input_.shape[2]), dtype= 'float32')
-#                 label_h5 = hf.create_dataset('label', (1, input_.shape[0], input_.shape[1], input_.shape[2]), 
-#                                             maxshape= (None, input_.shape[0], input_.shape[1], input_.shape[2]),
-#                                             chunks= (1, input_.shape[0], input_.shape[1], input_.shape[2]), dtype= 'float32')
-#     else:
-#         hf = h5py.File(save_path, 'a')
-#         input_h5 = hf['input']
-#         label_h5 = hf['label']
+            if config.is_train:
+                input_h5 = hf.create_dataset('input', (1, config.image_size, config.image_size, config.c_dim), 
+                                            maxshape= (None, config.image_size, config.image_size, config.c_dim),
+                                            chunks= (1, config.image_size, config.image_size, config.c_dim), dtype= 'float32')
+                label_h5 = hf.create_dataset('label', (1, config.image_size, config.image_size, config.c_dim), 
+                                            maxshape= (None, config.image_size, config.image_size, config.c_dim),
+                                            chunks= (1, config.image_size, config.image_size, config.c_dim), dtype= 'float32')
+            else:
+                input_h5 = hf.create_dataset('input', (1, input_.shape[0], input_.shape[1], input_.shape[2]), 
+                                            maxshape= (None, input_.shape[0], input_.shape[1], input_.shape[2]),
+                                            chunks= (1, input_.shape[0], input_.shape[1], input_.shape[2]), dtype= 'float32')
+                label_h5 = hf.create_dataset('label', (1, input_.shape[0], input_.shape[1], input_.shape[2]), 
+                                            maxshape= (None, input_.shape[0], input_.shape[1], input_.shape[2]),
+                                            chunks= (1, input_.shape[0], input_.shape[1], input_.shape[2]), dtype= 'float32')
+    else:
+        hf = h5py.File(save_path, 'a')
+        input_h5 = hf['input']
+        label_h5 = hf['label']
 
-#     if config.is_train:
-#         input_h5.resize([times+1, config.image_size, config.image_size, config.c_dim])
-#         input_h5[times : times+1] = input_[np.newaxis,:]
-#         label_h5.resize([times+1, config.image_size, config.image_size, config.c_dim])
-#         label_h5[times : times+1] = label_[np.newaxis,:]
-#     else:
-#         input_h5.resize([times+1, input_.shape[0], input_.shape[1], input_.shape[2]])
-#         input_h5[times : times+1] = input_[np.newaxis,:]
-#         label_h5.resize([times+1, input_.shape[0], input_.shape[1], input_.shape[2]])
-#         label_h5[times : times+1] = label_[np.newaxis,:]
+    if config.is_train:
+        input_h5.resize([times+1, config.image_size, config.image_size, config.c_dim])
+        input_h5[times : times+1] = input_[np.newaxis,:]
+        label_h5.resize([times+1, config.image_size, config.image_size, config.c_dim])
+        label_h5[times : times+1] = label_[np.newaxis,:]
+    else:
+        input_h5.resize([times+1, input_.shape[0], input_.shape[1], input_.shape[2]])
+        input_h5[times : times+1] = input_[np.newaxis,:]
+        label_h5.resize([times+1, input_.shape[0], input_.shape[1], input_.shape[2]])
+        label_h5[times : times+1] = label_[np.newaxis,:]
 
-#     hf.close()
-#     return True
+    hf.close()
+    return True
 
 
 
-# def make_patched_data(data, config):
-#     times = 0
-#     for i in range(len(data)):
-#         input_, label_ = preprocess(data[i], config)
+def make_patched_data(data, config):
+    times = 0
+    for i in range(len(data)):
+        input_, label_ = preprocess(data[i], config)
 
-#         if len(input_.shape) == 3:
-#             h, w, c = input_.shape
-#         else:
-#             h, w = input_.shape
+        if len(input_.shape) == 3:
+            h, w, c = input_.shape
+        else:
+            h, w = input_.shape
 
-#         for patch in range(16):
-#             crop_input, crop_label = get_random_crop(input_, label_, config)
-#             save_flag = make_data_h5(crop_input, crop_label, config, times)
-#             if not save_flag:
-#                 return
-#             times += 1
+        for patch in range(16):
+            crop_input, crop_label = get_random_crop(input_, label_, config)
+            save_flag = make_data_h5(crop_input, crop_label, config, times)
+            if not save_flag:
+                return
+            times += 1
 
-#         print('Processed training image: [%d / %d]' % (i+1, len(data)))
+        print('Processed training image: [%d / %d]' % (i+1, len(data)))
 
 
 # def input_setup(config):
