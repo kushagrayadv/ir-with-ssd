@@ -43,27 +43,27 @@ def makenoisy(img, noise_level):
     return noisy_img
 
 
-# def get_random_crop(input_, label_, config):
+def get_random_crop(input_, label_, config):
 
-#     crop_height = config.image_size
-#     crop_width = config.image_size
+    crop_height = config.image_size
+    crop_width = config.image_size
 
-#     max_x = input_.shape[1] - crop_width
-#     max_y = input_.shape[0] - crop_height
+    max_x = input_.shape[1] - crop_width
+    max_y = input_.shape[0] - crop_height
 
-#     x = np.random.randint(0, max_x)
-#     y = np.random.randint(0, max_y)
+    x = np.random.randint(0, max_x)
+    y = np.random.randint(0, max_y)
 
-#     crop_input = input_[y: y + crop_height, x: x + crop_width]
-#     crop_input = crop_input.reshape([config.image_size, config.image_size, config.c_dim])
-#     crop_input = crop_input / 255.0
+    crop_input = input_[y: y + crop_height, x: x + crop_width]
+    crop_input = crop_input.reshape([config.image_size, config.image_size, config.c_dim])
+    crop_input = crop_input / 255.0
 
-#     crop_label = label_[y: y + crop_height, x: x + crop_width]
-#     crop_label = crop_label.reshape([config.image_size, config.image_size, config.c_dim])
-#     crop_label = crop_label / 255.0
+    crop_label = label_[y: y + crop_height, x: x + crop_width]
+    crop_label = crop_label.reshape([config.image_size, config.image_size, config.c_dim])
+    crop_label = crop_label / 255.0
 
 
-#     return crop_input, crop_label
+    return crop_input, crop_label
 
 
 # def preprocess(path, config):
