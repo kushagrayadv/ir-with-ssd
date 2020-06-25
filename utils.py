@@ -66,41 +66,41 @@ def get_random_crop(input_, label_, config):
     return crop_input, crop_label
 
 
-# def preprocess(path, config):
-#     noise_level = config.noise_level
+def preprocess(path, config):
+    noise_level = config.noise_level
     
-#     img = imread(path)
+    img = imread(path)
     
-#     input_ = makenoisy(img, noise_level)
-#     label_ = img
+    input_ = makenoisy(img, noise_level)
+    label_ = img
 
-#     # input_ = input_[:,:,::-1] # [::-1] means reverse ordering
-#     # label_ = label_[:,:,::-1]
-#     return input_, label_
+    # input_ = input_[:,:,::-1] # [::-1] means reverse ordering
+    # label_ = label_[:,:,::-1]
+    return input_, label_
 
 
-# def prepare_data(config):
-#     if config.is_train:
-#         data_dir = os.path.join(os.path.join(os.getcwd(), 'Data'), config.train_set)
-#         data_jpg = glob.glob(os.path.join(data_dir, '*.jpg'))
-#         data_png = glob.glob(os.path.join(data_dir, '*.png'))
-#         data = data_jpg + data_png
+def prepare_data(config):
+    if config.is_train:
+        data_dir = os.path.join(os.path.join(os.getcwd(), 'Data'), config.train_set)
+        data_jpg = glob.glob(os.path.join(data_dir, '*.jpg'))
+        data_png = glob.glob(os.path.join(data_dir, '*.png'))
+        data = data_jpg + data_png
     
-#     elif config.is_eval:
-#         # data_dir = os.path.join(os.path.join(os.getcwd(), 'Data'), config.eval_set)
-#         data_dir = './VOCdevkit/VOC2007/JPEGImages'
-#         # data_dir = './Data/Train'
-#         data = glob.glob(os.path.join(data_dir, '*.jpg'))
+    elif config.is_eval:
+        # data_dir = os.path.join(os.path.join(os.getcwd(), 'Data'), config.eval_set)
+        data_dir = './VOCdevkit/VOC2007/JPEGImages'
+        # data_dir = './Data/Train'
+        data = glob.glob(os.path.join(data_dir, '*.jpg'))
     
-#     else:
-#         if config.test_image != '':
-#             data = [os.path.join(os.getcwd(), config.test_image)]
+    else:
+        if config.test_image != '':
+            data = [os.path.join(os.getcwd(), config.test_image)]
                 
-#         else: 
-#             data_dir = os.path.join(os.path.join(os.getcwd(), 'Data'), config.test_set)
-#             data = glob.glob(os.path.join(data_dir,'*.jpg'))
+        else: 
+            data_dir = os.path.join(os.path.join(os.getcwd(), 'Data'), config.test_set)
+            data = glob.glob(os.path.join(data_dir,'*.jpg'))
 
-#     return data
+    return data
 
 
 def make_data_h5(input_, label_, config, times):
