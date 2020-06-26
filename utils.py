@@ -196,35 +196,35 @@ def augmentation(batch, random):
     return batch_rot
 
 
-# def get_data_dir(checkpoint_dir, is_train, noise_level):
-#     if(is_train):
-#         return os.path.join(os.path.join(os.getcwd(), checkpoint_dir), 'train_%dsigma.h5' % noise_level)
-#     else:
-#         return os.path.join(os.path.join(os.getcwd(), checkpoint_dir), 'eval_%dsigma.h5' % noise_level)
+def get_data_dir(checkpoint_dir, is_train, noise_level):
+    if(is_train):
+        return os.path.join(os.path.join(os.getcwd(), checkpoint_dir), 'train_%dsigma.h5' % noise_level)
+    else:
+        return os.path.join(os.path.join(os.getcwd(), checkpoint_dir), 'eval_%dsigma.h5' % noise_level)
 
 
-# def get_num_data(path):
-#     with h5py.File(path, 'r') as hf:
-#         input_ = hf['input']
-#         return input_.shape[0]
+def get_num_data(path):
+    with h5py.File(path, 'r') as hf:
+        input_ = hf['input']
+        return input_.shape[0]
 
 
-# def get_batch(path, num_data, batch_size):
-#     with h5py.File(path, 'r') as h5:
-#         input_ = h5['input']
-#         label_ = h5['label']
+def get_batch(path, num_data, batch_size):
+    with h5py.File(path, 'r') as h5:
+        input_ = h5['input']
+        label_ = h5['label']
 
-#         random_batch = np.random.rand(batch_size) * (num_data - 1)
-#         batch_images = np.zeros([batch_size, input_[0].shape[0], input_[0].shape[1], input_[0].shape[2]])
-#         batch_labels = np.zeros([batch_size, label_[0].shape[0], label_[0].shape[1], label_[0].shape[2]])
-#         for i in range(batch_size):
-#             batch_images[i, :, :, :] = np.asarray(input_[int(random_batch[i])])
-#             batch_labels[i, :, :, :] = np.asarray(label_[int(random_batch[i])])
+        random_batch = np.random.rand(batch_size) * (num_data - 1)
+        batch_images = np.zeros([batch_size, input_[0].shape[0], input_[0].shape[1], input_[0].shape[2]])
+        batch_labels = np.zeros([batch_size, label_[0].shape[0], label_[0].shape[1], label_[0].shape[2]])
+        for i in range(batch_size):
+            batch_images[i, :, :, :] = np.asarray(input_[int(random_batch[i])])
+            batch_labels[i, :, :, :] = np.asarray(label_[int(random_batch[i])])
 
-#         random_aug = np.random.rand(2)
-#         batch_images = augmentation(batch_images, random_aug)
-#         batch_labels = augmentation(batch_labels, random_aug)
-#         return batch_images, batch_labels
+        random_aug = np.random.rand(2)
+        batch_images = augmentation(batch_images, random_aug)
+        batch_labels = augmentation(batch_labels, random_aug)
+        return batch_images, batch_labels
 
 
 
