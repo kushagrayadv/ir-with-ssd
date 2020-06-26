@@ -174,26 +174,26 @@ def make_patched_data(data, config):
         print('Processed training image: [%d / %d]' % (i+1, len(data)))
 
 
-# def input_setup(config):
-#     data = prepare_data(config)
-#     make_patched_data(data, config)
-#     return data
+def input_setup(config):
+    data = prepare_data(config)
+    make_patched_data(data, config)
+    return data
 
 
-# def augmentation(batch, random):
-#     if random[0] < 0.3:
-#         batch_flip = np.flip(batch, 1)
-#     elif random[0] > 0.7:
-#         batch_flip = np.flip(batch, 2)
-#     else:
-#         batch_flip = batch
+def augmentation(batch, random):
+    if random[0] < 0.3:
+        batch_flip = np.flip(batch, 1)
+    elif random[0] > 0.7:
+        batch_flip = np.flip(batch, 2)
+    else:
+        batch_flip = batch
     
-#     if random[1] < 0.5:
-#         batch_rot = np.rot90(batch_flip, 1, [1,2])
-#     else:
-#         batch_rot = batch_flip
+    if random[1] < 0.5:
+        batch_rot = np.rot90(batch_flip, 1, [1,2])
+    else:
+        batch_rot = batch_flip
     
-#     return batch_rot
+    return batch_rot
 
 
 # def get_data_dir(checkpoint_dir, is_train, noise_level):
