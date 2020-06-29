@@ -171,62 +171,62 @@ class RDN(object):
                         global_step=step)
 
     
-#     def train(self,config):
-#         print('\nPreparing Data....\n')
-#         data = input_setup(config)
-#         if len(data)==0:
-#             print('\nTraining data not found\n')
-#             return
+    def train(self,config):
+        print('\nPreparing Data....\n')
+        data = input_setup(config)
+        if len(data)==0:
+            print('\nTraining data not found\n')
+            return
 
-#         data_dir = get_data_dir(config.checkpoint_dir, config.is_train, config.noise_level)
-#         print((data_dir))
-#         num_data = get_num_data(data_dir)    
-#         print(num_data)
-#         num_batch = num_data // config.batch_size
-#         print(num_batch)
+        data_dir = get_data_dir(config.checkpoint_dir, config.is_train, config.noise_level)
+        print((data_dir))
+        num_data = get_num_data(data_dir)    
+        print(num_data)
+        num_batch = num_data // config.batch_size
+        print(num_batch)
 
-#         images_shape = [None, self.image_size, self.image_size, self.c_dim]
-#         labels_shape = [None, self.image_size, self.image_size, self.c_dim]
-#         self.build_model(images_shape, labels_shape)
+        images_shape = [None, self.image_size, self.image_size, self.c_dim]
+        labels_shape = [None, self.image_size, self.image_size, self.c_dim]
+        self.build_model(images_shape, labels_shape)
 
-#         counter = self.load(config.checkpoint_dir, restore=False)
-#         epoch_start = int(counter / num_batch)
-#         batch_start = counter % num_batch
+        counter = self.load(config.checkpoint_dir, restore=False)
+        epoch_start = int(counter / num_batch)
+        batch_start = counter % num_batch
 
-#         global_step = tf.Variable(counter, trainable=False)
-#         learning_rate = tf.train.exponential_decay(config.learning_rate, global_step, config.lr_decay_steps * num_batch, config.lr_decay_rate, staircase=True)
-#         optimizer = tf.train.AdamOptimizer(learning_rate=0.0001)
-#         learning_step = optimizer.minimize(loss= self.loss, global_step = global_step)
+        global_step = tf.Variable(counter, trainable=False)
+        learning_rate = tf.train.exponential_decay(config.learning_rate, global_step, config.lr_decay_steps * num_batch, config.lr_decay_rate, staircase=True)
+        optimizer = tf.train.AdamOptimizer(learning_rate=0.0001)
+        learning_step = optimizer.minimize(loss= self.loss, global_step = global_step)
 
-#         self.sess.run(tf.global_variables_initializer())
-#         merged_summary_op = tf.summary.merge_all()
-#         summary_writer = tf.summary.FileWriter(os.path.join(config.checkpoint_dir, self.model_name, 'log'), graph=self.sess.graph)
+        self.sess.run(tf.global_variables_initializer())
+        merged_summary_op = tf.summary.merge_all()
+        summary_writer = tf.summary.FileWriter(os.path.join(config.checkpoint_dir, self.model_name, 'log'), graph=self.sess.graph)
 
-#         self.load(config.checkpoint_dir, restore = True)
-#         print('\nStarting training...\n')
-#         logFile = open('train_log_file_sigma_%s.txt' % config.noise_level, 'w')
-#         for epoch in range(epoch_start, config.epochs):
-#             for idx in range(batch_start, num_batch):
-#                 batch_images, batch_labels = get_batch(data_dir, num_data, config.batch_size)
-#                 counter += 1
+        self.load(config.checkpoint_dir, restore = True)
+        print('\nStarting training...\n')
+        logFile = open('train_log_file_sigma_%s.txt' % config.noise_level, 'w')
+        for epoch in range(epoch_start, config.epochs):
+            for idx in range(batch_start, num_batch):
+                batch_images, batch_labels = get_batch(data_dir, num_data, config.batch_size)
+                counter += 1
 
-#                 _, err, lr = self.sess.run([learning_step, self.loss, learning_rate], feed_dict= {self.images: batch_images, self.labels: batch_labels})
+                _, err, lr = self.sess.run([learning_step, self.loss, learning_rate], feed_dict= {self.images: batch_images, self.labels: batch_labels})
 
-#                 if counter % 10 == 0:
-#                     print('Epoch: [%4d] Batch: [%d/%d] loss: [%.8f] lr: [%5f] step: [%d]' % ((epoch+1), (idx+1), num_batch, err, lr, counter))
-#                     logFile.write('Epoch: [%4d] Batch: [%d/%d] loss: [%.8f] lr: [%5f] step: [%d]\n' % ((epoch+1), (idx+1), num_batch, err, lr, counter))
-#                 if counter % 10000 == 0:
-#                     self.save(config.checkpoint_dir, counter)
+                if counter % 10 == 0:
+                    print('Epoch: [%4d] Batch: [%d/%d] loss: [%.8f] lr: [%5f] step: [%d]' % ((epoch+1), (idx+1), num_batch, err, lr, counter))
+                    logFile.write('Epoch: [%4d] Batch: [%d/%d] loss: [%.8f] lr: [%5f] step: [%d]\n' % ((epoch+1), (idx+1), num_batch, err, lr, counter))
+                if counter % 10000 == 0:
+                    self.save(config.checkpoint_dir, counter)
 
-#                     summary_str = self.sess.run(merged_summary_op, feed_dict = {self.images: batch_images, self.labels: batch_labels})
-#                     summary_writer.add_summary(summary_str, counter)
+                    summary_str = self.sess.run(merged_summary_op, feed_dict = {self.images: batch_images, self.labels: batch_labels})
+                    summary_writer.add_summary(summary_str, counter)
 
-#                 if counter > 0 and counter == config.epochs * num_batch:
-#                     self.save(config.checkpoint_dir,counter)
-#                     break
+                if counter > 0 and counter == config.epochs * num_batch:
+                    self.save(config.checkpoint_dir,counter)
+                    break
 
-#         logFile.close()
-#         summary_writer.close()
+        logFile.close()
+        summary_writer.close()
 
 #     def eval(self, config):
 #         print('\nPreparing Data..\n')
