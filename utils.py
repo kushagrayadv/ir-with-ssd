@@ -228,10 +228,10 @@ def get_batch(path, num_data, batch_size):
 
 
 
-# def get_image(path, config):
+def get_image(path, config):
     
-#     image, label = preprocess(path, config)
-#     image = image[np.newaxis, :]
-#     label = label[np.newaxis, :] 
-#     return image, label
+    image, label = preprocess(path, config)
+    image = image[np.newaxis, :]
+    label = label[np.newaxis, :] 
+    return image, label
 
