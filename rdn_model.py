@@ -281,41 +281,41 @@ class RDN(object):
  
 
 
-#     def test(self, config):
-#         print('\nPreparing the data..\n')
-#         paths = prepare_data(config)
-#         num_data = len(paths)
+    def test(self, config):
+        print('\nPreparing the data..\n')
+        paths = prepare_data(config)
+        num_data = len(paths)
 
-#         avg_time = 0
-#         print('\nInitiating the testing\n')
-#         for i in range(num_data):
-# #            input_ = imread(paths[i])
-# #            input_ = input_[:,:,::-1]
-#             input_, label_ = get_image(paths[i], config)
-# #            input_ = input_[np.newaxis, :]
+        avg_time = 0
+        print('\nInitiating the testing\n')
+        for i in range(num_data):
+#            input_ = imread(paths[i])
+#            input_ = input_[:,:,::-1]
+            input_, label_ = get_image(paths[i], config)
+#            input_ = input_[np.newaxis, :]
 
-#             image_shape = input_.shape
-#             label_shape = input_.shape
-#             self.build_model(image_shape, label_shape)
-#             tf.global_variables_initializer().run(session= self.sess)
+            image_shape = input_.shape
+            label_shape = input_.shape
+            self.build_model(image_shape, label_shape)
+            tf.global_variables_initializer().run(session= self.sess)
 
-#             self.load(config.checkpoint_dir, restore=True)
+            self.load(config.checkpoint_dir, restore=True)
 
-#             time_ = time.time()
-#             result = self.sess.run([self.preds], feed_dict = {self.images: input_/255.0})
-#             avg_time += time.time() - time_
+            time_ = time.time()
+            result = self.sess.run([self.preds], feed_dict = {self.images: input_/255.0})
+            avg_time += time.time() - time_
 
-#             self.sess.close()
-#             tf.reset_default_graph()
-#             self.sess = tf.Session()
+            self.sess.close()
+            tf.reset_default_graph()
+            self.sess = tf.Session()
 
-#             img = np.squeeze(result) * 255
-#             img = np.clip(img, 0, 255)
-# #            img = img[:,:,::-1]
+            img = np.squeeze(result) * 255
+            img = np.clip(img, 0, 255)
+#            img = img[:,:,::-1]
 
-#             filename = os.path.basename(paths[i])
-#             if not os.path.isdir(os.path.join(os.getcwd(), config.result_dir)):
-#                 os.makedirs(os.path.join(os.getcwd(), config.result_dir))
-#             imsave(img, path= config.result_dir + '/' +filename)
-#             imsave(input_[0, :], path= config.result_dir + '/noisy_%s' % filename)
+            filename = os.path.basename(paths[i])
+            if not os.path.isdir(os.path.join(os.getcwd(), config.result_dir)):
+                os.makedirs(os.path.join(os.getcwd(), config.result_dir))
+            imsave(img, path= config.result_dir + '/' +filename)
+            imsave(input_[0, :], path= config.result_dir + '/noisy_%s' % filename)
         
