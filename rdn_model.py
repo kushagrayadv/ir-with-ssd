@@ -228,56 +228,56 @@ class RDN(object):
         logFile.close()
         summary_writer.close()
 
-#     def eval(self, config):
-#         print('\nPreparing Data..\n')
-#         paths = prepare_data(config)
-#         num_data = len(paths)
+    def eval(self, config):
+        print('\nPreparing Data..\n')
+        paths = prepare_data(config)
+        num_data = len(paths)
     
-#         psnrFile = open('psnr_sigma_%s.txt'%config.noise_level, 'a')
+        psnrFile = open('psnr_sigma_%s.txt'%config.noise_level, 'a')
 
-#         avg_time = 0
-#         avg_psnr = 0
-#         print('\nNow evaluating the dataset\n')
-#         for i in range(num_data):
+        avg_time = 0
+        avg_psnr = 0
+        print('\nNow evaluating the dataset\n')
+        for i in range(num_data):
 
-#             input_, label_ = get_image(paths[i], config)
+            input_, label_ = get_image(paths[i], config)
 
-#             image_shape = input_.shape
-#             label_shape = label_.shape
+            image_shape = input_.shape
+            label_shape = label_.shape
 
-#             self.build_model(image_shape, label_shape)
+            self.build_model(image_shape, label_shape)
 
-#             self.sess.run(tf.global_variables_initializer())
+            self.sess.run(tf.global_variables_initializer())
 
-#             self.load(config.checkpoint_dir, restore=True)
+            self.load(config.checkpoint_dir, restore=True)
 
-#             time_ = time.time()
-#             result = self.sess.run([self.preds], feed_dict = {self.images: input_/255.0})
-#             avg_time += time.time() - time_
+            time_ = time.time()
+            result = self.sess.run([self.preds], feed_dict = {self.images: input_/255.0})
+            avg_time += time.time() - time_
 
-#             self.sess.close()
-#             tf.reset_default_graph()
-#             self.sess = tf.Session()
+            self.sess.close()
+            tf.reset_default_graph()
+            self.sess = tf.Session()
 
-#             img = np.squeeze(result) * 255
-#             img = np.clip(img, 0, 255)
-#             psnr = PSNR(img, label_)
-#             avg_psnr += psnr
+            img = np.squeeze(result) * 255
+            img = np.clip(img, 0, 255)
+            psnr = PSNR(img, label_)
+            avg_psnr += psnr
 
-#             print('image: [%d/%d] time: [%.4f] psnr: [%.4f]' % (i+1, num_data, time.time()-time_, psnr))
-#             psnrFile.write('image: [%d/%d] time: [%.4f] psnr: [%.4f]\n' % (i+1, num_data, time.time()-time_, psnr))
+            print('image: [%d/%d] time: [%.4f] psnr: [%.4f]' % (i+1, num_data, time.time()-time_, psnr))
+            psnrFile.write('image: [%d/%d] time: [%.4f] psnr: [%.4f]\n' % (i+1, num_data, time.time()-time_, psnr))
 
-#             if not os.path.isdir(os.path.join(os.getcwd(), config.result_dir)):
-#                 os.makedirs(os.path.join(os.getcwd(), config.result_dir))
+            if not os.path.isdir(os.path.join(os.getcwd(), config.result_dir)):
+                os.makedirs(os.path.join(os.getcwd(), config.result_dir))
             
-#             filename = os.path.basename(paths[i])
-#             imsave(img, path= config.result_dir + '/%d_sigma/JPEGImages/' % config.noise_level + filename)
+            filename = os.path.basename(paths[i])
+            imsave(img, path= config.result_dir + '/%d_sigma/JPEGImages/' % config.noise_level + filename)
 
-#         print('\nAverage Time: %.4f' % (avg_time / num_data))
-#         psnrFile.write('\nAverage Time: %.4f' % (avg_time / num_data))
-#         print('\nAverage PSNR: %.4f' % (avg_psnr / num_data))
-#         psnrFile.write('\nAverage PSNR: %.4f' % (avg_psnr / num_data))
-#         psnrFile.close()
+        print('\nAverage Time: %.4f' % (avg_time / num_data))
+        psnrFile.write('\nAverage Time: %.4f' % (avg_time / num_data))
+        print('\nAverage PSNR: %.4f' % (avg_psnr / num_data))
+        psnrFile.write('\nAverage PSNR: %.4f' % (avg_psnr / num_data))
+        psnrFile.close()
  
 
 
