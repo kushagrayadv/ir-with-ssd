@@ -130,62 +130,62 @@ def ssd_eval(dataset_name, dataset_dir, batch_size, eval_dir):
         variables_to_restore = slim.get_variables_to_restore()
 
    
-#         with tf.device('/device:CPU:0'):
+        with tf.device('/device:CPU:0'):
 
-#             dict_metrics = {}
+            dict_metrics = {}
             
-#             for loss in tf.get_collection(tf.GraphKeys.LOSSES):
-#                 dict_metrics[loss.op.name] = slim.metrics.streaming_mean(loss)
+            for loss in tf.get_collection(tf.GraphKeys.LOSSES):
+                dict_metrics[loss.op.name] = slim.metrics.streaming_mean(loss)
 
-#             for loss in tf.get_collection('EXTRA_LOSSES'):
-#                 dict_metrics[loss.op.name] = slim.metrics.streaming_mean(loss)
+            for loss in tf.get_collection('EXTRA_LOSSES'):
+                dict_metrics[loss.op.name] = slim.metrics.streaming_mean(loss)
             
-#             for name, metric in dict_metrics.items():
-#                 summary_name = name
-#                 op = tf.summary.scalar(summary_name, metric[0], collections=[])
-#                 tf.add_to_collection(tf.GraphKeys.SUMMARIES, op)
+            for name, metric in dict_metrics.items():
+                summary_name = name
+                op = tf.summary.scalar(summary_name, metric[0], collections=[])
+                tf.add_to_collection(tf.GraphKeys.SUMMARIES, op)
             
-#             tp_fp_metric = tfe.streaming_tp_fp_arrays(num_gbboxes, tp, fp, rscores)
-#             for c in tp_fp_metric[0].keys():
-#                 dict_metrics['tp_fp_%s' % c] = (tp_fp_metric[0][c], tp_fp_metric[1][c])
+            tp_fp_metric = tfe.streaming_tp_fp_arrays(num_gbboxes, tp, fp, rscores)
+            for c in tp_fp_metric[0].keys():
+                dict_metrics['tp_fp_%s' % c] = (tp_fp_metric[0][c], tp_fp_metric[1][c])
 
-#             aps_VOC07 = {}
-#             aps_voc12 = {}
+            aps_VOC07 = {}
+            aps_voc12 = {}
             
-#             for c in tp_fp_metric[0].keys():
-#                 # precision and recall values
-#                 pre, rec = tfe.precision_recall(*tp_fp_metric[0][c])
+            for c in tp_fp_metric[0].keys():
+                # precision and recall values
+                pre, rec = tfe.precision_recall(*tp_fp_metric[0][c])
                 
-#                 # average precision VOC07
-#                 v = tfe.average_precision_voc07(pre,rec)
-#                 summary_name = 'AP_VOC07/%s' % c
-#                 op = tf.summary.scalar(summary_name, v, collections=[])
-#                 tf.add_to_collection(tf.GraphKeys.SUMMARIES, op)
-#                 aps_VOC07[c] = v
+                # average precision VOC07
+                v = tfe.average_precision_voc07(pre,rec)
+                summary_name = 'AP_VOC07/%s' % c
+                op = tf.summary.scalar(summary_name, v, collections=[])
+                tf.add_to_collection(tf.GraphKeys.SUMMARIES, op)
+                aps_VOC07[c] = v
 
-#                 # Average precision VOC12.
-#                 v = tfe.average_precision_voc12(pre, rec)
-#                 summary_name = 'AP_VOC12/%s' % c
-#                 op = tf.summary.scalar(summary_name, v, collections=[])
-#                 tf.add_to_collection(tf.GraphKeys.SUMMARIES, op)
-#                 aps_voc12[c] = v
+                # Average precision VOC12.
+                v = tfe.average_precision_voc12(pre, rec)
+                summary_name = 'AP_VOC12/%s' % c
+                op = tf.summary.scalar(summary_name, v, collections=[])
+                tf.add_to_collection(tf.GraphKeys.SUMMARIES, op)
+                aps_voc12[c] = v
             
-#             # Mean average Precision VOC07
-#             summary_name = 'AP_VOC07/mAP'
-#             mAP = tf.add_n(list(aps_VOC07.values()))/len(aps_VOC07)
-#             op = tf.summary.scalar(summary_name, mAP, collections=[])
-#             op = tf.Print(op, [mAP], summary_name)
-#             tf.add_to_collection(tf.GraphKeys.SUMMARIES, op)
+            # Mean average Precision VOC07
+            summary_name = 'AP_VOC07/mAP'
+            mAP = tf.add_n(list(aps_VOC07.values()))/len(aps_VOC07)
+            op = tf.summary.scalar(summary_name, mAP, collections=[])
+            op = tf.Print(op, [mAP], summary_name)
+            tf.add_to_collection(tf.GraphKeys.SUMMARIES, op)
 
-#             # Mean average precision VOC12.
-#             summary_name = 'AP_VOC12/mAP'
-#             mAP = tf.add_n(list(aps_voc12.values())) / len(aps_voc12)
-#             op = tf.summary.scalar(summary_name, mAP, collections=[])
-#             op = tf.Print(op, [mAP], summary_name)
-#             tf.add_to_collection(tf.GraphKeys.SUMMARIES, op)
+            # Mean average precision VOC12.
+            summary_name = 'AP_VOC12/mAP'
+            mAP = tf.add_n(list(aps_voc12.values())) / len(aps_voc12)
+            op = tf.summary.scalar(summary_name, mAP, collections=[])
+            op = tf.Print(op, [mAP], summary_name)
+            tf.add_to_collection(tf.GraphKeys.SUMMARIES, op)
 
 
-#         names_to_values, names_to_updates = slim.metrics.aggregate_metric_map(dict_metrics)
+        names_to_values, names_to_updates = slim.metrics.aggregate_metric_map(dict_metrics)
 
 #         # Evaluation Loop
 
