@@ -63,71 +63,71 @@ def flatten(x):
 
 
 # Function for evaluating the network
-# def ssd_eval(dataset_name, dataset_dir, batch_size, eval_dir):
+def ssd_eval(dataset_name, dataset_dir, batch_size, eval_dir):
     
-#     tf.logging.set_verbosity(tf.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.INFO)
 
-#     with tf.Graph().as_default():
+    with tf.Graph().as_default():
 
-#         tf_global_step = slim.get_or_create_global_step()
+        tf_global_step = slim.get_or_create_global_step()
         
-#         # Dataset + SSD Model + Pre-processing
-#         dataset = dataset_factory.get_dataset(dataset_name, 'test', dataset_dir)
+        # Dataset + SSD Model + Pre-processing
+        dataset = dataset_factory.get_dataset(dataset_name, 'test', dataset_dir)
         
-#         ssd_net = ssd_vgg_300.SSDNet()
-#         ssd_shape = net_shape
-#         ssd_anchors = ssd_net.anchors(ssd_shape)
+        ssd_net = ssd_vgg_300.SSDNet()
+        ssd_shape = net_shape
+        ssd_anchors = ssd_net.anchors(ssd_shape)
 
-#         # Create a dataset provider and batches
-#         with tf.device('/cpu:0'):
-#             with tf.name_scope(dataset_name + '_data_provider'):
-#                 provider = slim.dataset_data_provider.DatasetDataProvider(
-#                     dataset,
-#                     common_queue_capacity = 2 * batch_size,
-#                     common_queue_min = batch_size,
-#                     shuffle = False
-#                 )
+        # Create a dataset provider and batches
+        with tf.device('/cpu:0'):
+            with tf.name_scope(dataset_name + '_data_provider'):
+                provider = slim.dataset_data_provider.DatasetDataProvider(
+                    dataset,
+                    common_queue_capacity = 2 * batch_size,
+                    common_queue_min = batch_size,
+                    shuffle = False
+                )
 
-#             [image, shape, glabels, gbboxes] = provider.get(['image', 'shape','object/label', 'object/bbox'])
-#             [gdifficults] = provider.get(['object/difficult'])
+            [image, shape, glabels, gbboxes] = provider.get(['image', 'shape','object/label', 'object/bbox'])
+            [gdifficults] = provider.get(['object/difficult'])
 
-#             image, glabels, gbboxes, gbbox_img = ssd_vgg_preprocessing.preprocess_for_eval(image, glabels, gbboxes, ssd_shape,
-#                                                                     data_format = data_format, 
-#                                                                     resize = ssd_vgg_preprocessing.Resize.WARP_RESIZE)
+            image, glabels, gbboxes, gbbox_img = ssd_vgg_preprocessing.preprocess_for_eval(image, glabels, gbboxes, ssd_shape,
+                                                                    data_format = data_format, 
+                                                                    resize = ssd_vgg_preprocessing.Resize.WARP_RESIZE)
 
-#             gclasses, glocalizations, gscores = ssd_net.bboxes_encode(glabels, gbboxes, ssd_anchors)
-#             batch_shape = [1] * 5 + [len(ssd_anchors)] * 3
+            gclasses, glocalizations, gscores = ssd_net.bboxes_encode(glabels, gbboxes, ssd_anchors)
+            batch_shape = [1] * 5 + [len(ssd_anchors)] * 3
 
-#             # Evaluation Batch
-#             r = tf.train.batch(reshape_list([image, glabels, gbboxes, gdifficults, gbbox_img, gclasses, glocalizations, gscores]),
-#                                 batch_size = batch_size, 
-#                                 num_threads = 1,
-#                                 capacity = 5 * batch_size, 
-#                                 dynamic_pad = True)
-#             (b_image, b_glabels, b_gbboxes, b_gdifficults, b_gbbox_img, b_gclasses, b_glocalizations,
-#                 b_gscores) = reshape_list(r, batch_shape)
+            # Evaluation Batch
+            r = tf.train.batch(reshape_list([image, glabels, gbboxes, gdifficults, gbbox_img, gclasses, glocalizations, gscores]),
+                                batch_size = batch_size, 
+                                num_threads = 1,
+                                capacity = 5 * batch_size, 
+                                dynamic_pad = True)
+            (b_image, b_glabels, b_gbboxes, b_gdifficults, b_gbbox_img, b_gclasses, b_glocalizations,
+                b_gscores) = reshape_list(r, batch_shape)
 
-#         # SSD network + output decoding
-#         arg_scope = ssd_net.arg_scope(data_format= data_format)
-#         with slim.arg_scope(arg_scope):
-#             predictions, localizations, logits, _ = ssd_net.net(b_image, is_training=False)
+        # SSD network + output decoding
+        arg_scope = ssd_net.arg_scope(data_format= data_format)
+        with slim.arg_scope(arg_scope):
+            predictions, localizations, logits, _ = ssd_net.net(b_image, is_training=False)
             
-#         ssd_net.losses(logits, localizations, b_gclasses, b_glocalizations, b_gscores)
+        ssd_net.losses(logits, localizations, b_gclasses, b_glocalizations, b_gscores)
 
-#         with tf.device('/device:CPU:0'):
-#             localizations = ssd_net.bboxes_decode(localizations, ssd_anchors)
-#             rscores, rbboxes = ssd_net.detected_bboxes(predictions, localizations,
-#                                                         select_threshold=0.01,
-#                                                         nms_threshold=0.45,
-#                                                         clipping_bbox=None,
-#                                                         top_k=400,
-#                                                         keep_top_k=200)
+        with tf.device('/device:CPU:0'):
+            localizations = ssd_net.bboxes_decode(localizations, ssd_anchors)
+            rscores, rbboxes = ssd_net.detected_bboxes(predictions, localizations,
+                                                        select_threshold=0.01,
+                                                        nms_threshold=0.45,
+                                                        clipping_bbox=None,
+                                                        top_k=400,
+                                                        keep_top_k=200)
             
-#             num_gbboxes, tp, fp, rscores = tfe.bboxes_matching_batch(rscores.keys(), rscores, rbboxes,
-#                                                                     b_glabels, b_gbboxes, b_gdifficults, 
-#                                                                     matching_threshold= 0.5)
+            num_gbboxes, tp, fp, rscores = tfe.bboxes_matching_batch(rscores.keys(), rscores, rbboxes,
+                                                                    b_glabels, b_gbboxes, b_gdifficults, 
+                                                                    matching_threshold= 0.5)
             
-#         variables_to_restore = slim.get_variables_to_restore()
+        variables_to_restore = slim.get_variables_to_restore()
 
    
 #         with tf.device('/device:CPU:0'):
