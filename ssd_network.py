@@ -210,64 +210,64 @@ def ssd_eval(dataset_name, dataset_dir, batch_size, eval_dir):
 
 
 
-# def ssd_test(path):
+def ssd_test(path):
 
-#     # Input Placeholder
-#     img_input = tf.placeholder(tf.uint8, shape= (None, None, 3))
+    # Input Placeholder
+    img_input = tf.placeholder(tf.uint8, shape= (None, None, 3))
 
-#     # Evaluation pre-processing: resize to ssd net shape
-#     image_pre, labels_pre, bbox_pre, bbox_img = ssd_vgg_preprocessing.preprocess_for_eval(img_input,
-#                                                     None, None, net_shape, data_format,
-#                                                     resize= ssd_vgg_preprocessing.Resize.WARP_RESIZE)
-#     image_4d = tf.expand_dims(image_pre, axis=0)
+    # Evaluation pre-processing: resize to ssd net shape
+    image_pre, labels_pre, bbox_pre, bbox_img = ssd_vgg_preprocessing.preprocess_for_eval(img_input,
+                                                    None, None, net_shape, data_format,
+                                                    resize= ssd_vgg_preprocessing.Resize.WARP_RESIZE)
+    image_4d = tf.expand_dims(image_pre, axis=0)
 
-#     # Define the SSD model
-#     reuse = True if 'ssd_net' in locals() else None
-#     ssd_net = ssd_vgg_300.SSDNet()
-#     with slim.arg_scope(ssd_net.arg_scope(data_format= data_format)):
-#         predictions, localizations, _, _ = ssd_net.net(image_4d, is_training= False, reuse = reuse)
+    # Define the SSD model
+    reuse = True if 'ssd_net' in locals() else None
+    ssd_net = ssd_vgg_300.SSDNet()
+    with slim.arg_scope(ssd_net.arg_scope(data_format= data_format)):
+        predictions, localizations, _, _ = ssd_net.net(image_4d, is_training= False, reuse = reuse)
 
 
-#     # SSD default anchor boxes
-#     ssd_anchors = ssd_net.anchors(net_shape)
+    # SSD default anchor boxes
+    ssd_anchors = ssd_net.anchors(net_shape)
 
-#     # Main image processing pipeline
+    # Main image processing pipeline
 
-#     # Tensorflow Session: grow memeory when needed, do not allow full GPU usage
-#     gpu_options = tf.GPUOptions(allow_growth = True)
-#     config = tf.ConfigProto(log_device_placement = False, gpu_options = gpu_options)
+    # Tensorflow Session: grow memeory when needed, do not allow full GPU usage
+    gpu_options = tf.GPUOptions(allow_growth = True)
+    config = tf.ConfigProto(log_device_placement = False, gpu_options = gpu_options)
     
-#     isess = tf.InteractiveSession(config = config)
+    isess = tf.InteractiveSession(config = config)
 
-#     # Restore the SSD model
-#     isess.run(tf.global_variables_initializer())
-#     saver = tf.train.Saver()
-#     saver.restore(isess, ckpt_filename)
+    # Restore the SSD model
+    isess.run(tf.global_variables_initializer())
+    saver = tf.train.Saver()
+    saver.restore(isess, ckpt_filename)
 
-#     # Run the SSD network
-#     def post_process(img, select_thresh=0.5, nms_thresh=0.45):
-#         rimg, rpredictions, rlocalizations, rbbox_img = isess.run([image_4d, predictions, localizations, bbox_img],
-#                                                             feed_dict= {img_input: img})
+    # Run the SSD network
+    def post_process(img, select_thresh=0.5, nms_thresh=0.45):
+        rimg, rpredictions, rlocalizations, rbbox_img = isess.run([image_4d, predictions, localizations, bbox_img],
+                                                            feed_dict= {img_input: img})
         
-#         # get the classes and bboxes from the output
-#         rclasses, rscores, rbboxes = np_methods.ssd_bboxes_select(rpredictions, rlocalizations,
-#                                                             ssd_anchors, select_threshold=select_thresh,
-#                                                             img_shape = net_shape, num_classes = 21,
-#                                                             decode = True)
+        # get the classes and bboxes from the output
+        rclasses, rscores, rbboxes = np_methods.ssd_bboxes_select(rpredictions, rlocalizations,
+                                                            ssd_anchors, select_threshold=select_thresh,
+                                                            img_shape = net_shape, num_classes = 21,
+                                                            decode = True)
         
-#         rbboxes = np_methods.bboxes_clip(rbbox_img, rbboxes)
-#         rclasses, rscores, rbboxes = np_methods.bboxes_sort(rclasses, rscores, rbboxes, top_k = 400)
-#         rclasses, rscores, rbboxes = np_methods.bboxes_nms(rclasses, rscores, rbboxes, nms_threshold = nms_thresh)
+        rbboxes = np_methods.bboxes_clip(rbbox_img, rbboxes)
+        rclasses, rscores, rbboxes = np_methods.bboxes_sort(rclasses, rscores, rbboxes, top_k = 400)
+        rclasses, rscores, rbboxes = np_methods.bboxes_nms(rclasses, rscores, rbboxes, nms_threshold = nms_thresh)
 
-#         # Resize the bboxes to the original image sizes, but useless for Resize.WARP
-#         rbboxes = np_methods.bboxes_resize(rbbox_img, rbboxes)
+        # Resize the bboxes to the original image sizes, but useless for Resize.WARP
+        rbboxes = np_methods.bboxes_resize(rbbox_img, rbboxes)
 
-#         return rclasses, rscores, rbboxes
+        return rclasses, rscores, rbboxes
     
     
-#     imgs = os.listdir(path)
-#     for i in range(len(imgs)):
-#         img_path = os.path.join(path, imgs[i])
-#         img = mpimg.imread(img_path)
-#         rclasses, rscores, rbboxes = post_process(img)
-#         visualization.plt_bboxes(img, rclasses, rscores, rbboxes)
+    imgs = os.listdir(path)
+    for i in range(len(imgs)):
+        img_path = os.path.join(path, imgs[i])
+        img = mpimg.imread(img_path)
+        rclasses, rscores, rbboxes = post_process(img)
+        visualization.plt_bboxes(img, rclasses, rscores, rbboxes)
