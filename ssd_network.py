@@ -187,26 +187,26 @@ def ssd_eval(dataset_name, dataset_dir, batch_size, eval_dir):
 
         names_to_values, names_to_updates = slim.metrics.aggregate_metric_map(dict_metrics)
 
-#         # Evaluation Loop
+        # Evaluation Loop
 
-#         gpu_options = tf.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction=0.9)
-#         config = tf.ConfigProto(log_device_placement=False, gpu_options=gpu_options)
+        gpu_options = tf.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction=0.9)
+        config = tf.ConfigProto(log_device_placement=False, gpu_options=gpu_options)
 
 
-#         num_batches = math.ceil(dataset.num_samples / float(batch_size))
-#         tf.logging.info('Evaluating %s' % ckpt_filename)
-#         start = time.time()
-#         slim.evaluation.evaluate_once(master= '', 
-#                                       checkpoint_path = ckpt_filename,
-#                                       logdir= eval_dir, 
-#                                       num_evals= num_batches,
-#                                       eval_op= flatten(list(names_to_updates.values())),
-#                                       variables_to_restore= variables_to_restore,
-#                                       session_config = config)
-#         # log time spent
-#         elapsed = time.time() - start
-#         print('Time Spent: %.3f' % elapsed)
-#         print('Time Spent per batch: %.3f seconds' % (elapsed/num_batches))
+        num_batches = math.ceil(dataset.num_samples / float(batch_size))
+        tf.logging.info('Evaluating %s' % ckpt_filename)
+        start = time.time()
+        slim.evaluation.evaluate_once(master= '', 
+                                      checkpoint_path = ckpt_filename,
+                                      logdir= eval_dir, 
+                                      num_evals= num_batches,
+                                      eval_op= flatten(list(names_to_updates.values())),
+                                      variables_to_restore= variables_to_restore,
+                                      session_config = config)
+        # log time spent
+        elapsed = time.time() - start
+        print('Time Spent: %.3f' % elapsed)
+        print('Time Spent per batch: %.3f seconds' % (elapsed/num_batches))
 
 
 
